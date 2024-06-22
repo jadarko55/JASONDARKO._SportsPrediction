@@ -2,8 +2,14 @@ import streamlit as st
 import joblib
 import pandas as pd
 
-model = joblib.load('best_model.pkl')
-scaler = joblib.load('scaler.pkl')
+# Load model and scaler
+try:
+    model = joblib.load('best_model.pkl')
+    scaler = joblib.load('scaler.pkl')
+except FileNotFoundError as e:
+    st.error(f'File not found error: {e}')
+except Exception as e:
+    st.error(f'Error loading model/scaler: {e}')
 
 st.title("Football Predictions")
 
