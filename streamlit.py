@@ -2,6 +2,8 @@ import streamlit as st
 import joblib
 import pandas as pd
 
+st.title("Football Predictions")
+
 # Load model and scaler
 try:
     model = joblib.load('best_model.pkl')
@@ -10,8 +12,7 @@ except FileNotFoundError as e:
     st.error(f'File not found error: {e}')
 except Exception as e:
     st.error(f'Error loading model/scaler: {e}')
-
-st.title("Football Predictions")
+    scaler = None  # Assign None if scaler fails to load, handle this case
 
 def features():
     potential = st.number_input("Player's Potential")
@@ -124,12 +125,15 @@ def features():
 input_data = features()
 
 try:
-    scaled_input = scaler.transform(input_data)
+    if scaler is not None:  # Check if scaler is defined
+        scaled_input = scaler.transform(input_data)
 
-    prediction = model.predict(scaled_input)
+        prediction = model.predict(scaled_input)
 
-    st.subheader('Prediction')
-    st.write(f'Predicted Rating: {prediction[0]}')
+        st.subheader('Prediction')
+        st.write(f'Predicted Rating: {prediction[0]}')
+    else:
+        st.error('Scaler is not defined. Cannot perform prediction.')
 
 except Exception as e:
     st.error(f'Error in prediction: {e}')
